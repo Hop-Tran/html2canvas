@@ -9,7 +9,8 @@ import {
     isSelectElement,
     isStyleElement,
     isTextareaElement,
-    isTextNode
+    isTextNode,
+    isSVGElement /* LuckyAlmighty: Add the check */
 } from './node-parser';
 import {Logger} from '../core/logger';
 import {isIdentToken, nonFunctionArgSeparator} from '../css/syntax/parser';
@@ -404,10 +405,21 @@ export class DocumentCloner {
         });
 
         anonymousReplacedElement.className = `${PSEUDO_HIDE_ELEMENT_CLASS_BEFORE} ${PSEUDO_HIDE_ELEMENT_CLASS_AFTER}`;
-        clone.className +=
-            pseudoElt === PseudoElementType.BEFORE
-                ? ` ${PSEUDO_HIDE_ELEMENT_CLASS_BEFORE}`
-                : ` ${PSEUDO_HIDE_ELEMENT_CLASS_AFTER}`;
+        /* LuckyAlmighty: SVG Element className now readonly */
+        if(isSVGElement(clone)) {
+          let cloneObject = clone.className; /* Typescript build will return error if we try to access the className property as object */
+          cloneObject.baseVal +=
+              pseudoElt === PseudoElementType.BEFORE
+                  ? ` ${PSEUDO_HIDE_ELEMENT_CLASS_BEFORE}`
+                  : ` ${PSEUDO_HIDE_ELEMENT_CLASS_AFTER}`;
+        }
+        else {
+          clone.className +=
+              pseudoElt === PseudoElementType.BEFORE
+                  ? ` ${PSEUDO_HIDE_ELEMENT_CLASS_BEFORE}`
+                  : ` ${PSEUDO_HIDE_ELEMENT_CLASS_AFTER}`;
+        }
+
         return anonymousReplacedElement;
     }
 }

@@ -27,19 +27,25 @@ export default html2canvas;
 
 CacheStorage.setContext(window);
 
-const renderElement = async (element: HTMLElement, opts: Partial<Options>): Promise<HTMLCanvasElement> => {
-    const ownerDocument = element.ownerDocument;
-
-    if (!ownerDocument) {
-        throw new Error(`Element is not attached to a Document`);
+const renderElement = async (elements: HTMLElement[], opts: Partial<Options>): Promise<HTMLCanvasElement>[] => {
+    if (!elements || elements.length === 0) {
+      throw new Error(`Elements empty`);
     }
 
-    const defaultView = ownerDocument.defaultView;
+    elements.forEach(element => {
+      const ownerDocument = element.ownerDocument;
 
-    if (!defaultView) {
-        throw new Error(`Document is not attached to a Window`);
-    }
+      if (!ownerDocument) {
+          throw new Error(`Element is not attached to a Document`);
+      }
 
+      const defaultView = ownerDocument.defaultView;
+
+      if (!defaultView) {
+          throw new Error(`Document is not attached to a Window`);
+      }
+    });
+    
     const instanceName = (Math.round(Math.random() * 1000) + Date.now()).toString(16);
 
     const {width, height, left, top} =
